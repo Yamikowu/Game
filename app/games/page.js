@@ -52,7 +52,7 @@ export default function GamesPage() {
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="flex space-x-8 min-w-max px-4">
-            {/* 敲木魚卡片 */}
+            {/* 敲木魚 */}
             <div className="w-80 flex-shrink-0 bg-gradient-to-br from-yellow-50 to-orange-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-orange-200">
               <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                 <Image
@@ -74,68 +74,70 @@ export default function GamesPage() {
                 </button>
               </Link>
             </div>
-            {/* 俄羅斯方塊卡片 */}
+            {/* 深呼吸 */}
             <div className="w-80 flex-shrink-0 bg-gradient-to-br from-blue-50 to-cyan-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-cyan-200">
               <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                 <Image
                   src="/teris.png"
-                  alt="俄羅斯方塊遊戲預覽"
+                  alt="深呼吸遊戲預覽"
                   fill
                   className="object-cover"
                 />
               </div>
               <h2 className="text-3xl font-bold text-cyan-700 mb-4">
-                簡易俄羅斯方塊
+                深呼吸
               </h2>
-              <p className="text-gray-700 mb-6 text-lg">堆疊方塊，挑戰極限！</p>
+              <p className="text-gray-700 mb-6 text-lg">
+                深呼吸，放鬆身心！
+              </p>
               <Link href="/games/teris">
                 <button className="bg-cyan-500 text-white px-6 py-3 rounded-lg hover:bg-cyan-600 transition-colors shadow-md cursor-pointer">
-                  開始挑戰
+                  開始深呼吸
                 </button>
               </Link>
             </div>
-            {/* 記憶配對卡片 */}
+            {/* 打字遊戲 */}
             <div className="w-80 flex-shrink-0 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-emerald-200">
               <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                 <Image
-                  src="/memory.png"
-                  alt="記憶配對遊戲預覽"
+                  src="/typing.png"
+                  alt="打字遊戲預覽"
                   fill
                   className="object-cover"
                 />
               </div>
               <h2 className="text-3xl font-bold text-emerald-700 mb-4">
-                記憶配對
+                打字遊戲
               </h2>
               <p className="text-gray-700 mb-6 text-lg">
-                訓練記憶，提升專注力！
+                提升打字速度與準確度！
               </p>
-              <Link href="/games/memory">
+              <Link href="/games/typing">
                 <button className="bg-emerald-500 text-white px-6 py-3 rounded-lg hover:bg-emerald-600 transition-colors shadow-md cursor-pointer">
-                  開始遊戲
+                  開始打字
                 </button>
               </Link>
             </div>
-            {/* 貪吃蛇卡片 */}
+            {/* 打地鼠 */}
             <div className="w-80 flex-shrink-0 bg-gradient-to-br from-red-50 to-rose-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-rose-200">
               <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                 <Image
                   src="/snake.png"
-                  alt="貪吃蛇遊戲預覽"
+                  alt="打地鼠遊戲預覽"
                   fill
                   className="object-cover"
                 />
               </div>
-              <h2 className="text-3xl font-bold text-rose-700 mb-4">貪吃蛇</h2>
+              <h2 className="text-3xl font-bold text-rose-700 mb-4">打地鼠</h2>
               <p className="text-gray-700 mb-6 text-lg">經典遊戲，永不過時！</p>
               <Link href="/games/typing">
                 <button className="bg-rose-500 text-white px-6 py-3 rounded-lg hover:bg-rose-600 transition-colors shadow-md cursor-pointer">
-                  開始遊戲
+                  開始打地鼠
                 </button>
               </Link>
             </div>
-            {/* 打字遊戲卡片 */}
-            <div className="w-80 flex-shrink-0 bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-purple-200">
+            {/* 記憶配對 */}
+            {/* <div className="w-80 flex-shrink-0 bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl shadow-xl p-8 hover:scale-105 transition-transform duration-300 border border-purple-200">
               <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                 <Image
                   src="/typing.png"
@@ -155,7 +157,8 @@ export default function GamesPage() {
                   開始遊戲
                 </button>
               </Link>
-            </div>
+            </div> */}
+            
           </div>
         </div>
       </div>

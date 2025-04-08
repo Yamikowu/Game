@@ -224,14 +224,18 @@ export default function Home() {
 
   // 切換單字列表
   const toggleWordList = (index: number) => {
+    // 確保索引有效
+    if (index < 0 || index >= wordLists.length) return;
+    
     setCurrentWordList(index);
     setShowWordListSelector(false);
-    // 如果遊戲已經開始，重新開始遊戲以使用新的單字列表
+    
+    // 無論遊戲是否開始，都更新單字列表
+    setWords(shuffleWords(wordLists[index].words).split(" "));
+    
+    // 如果遊戲已經開始，重新開始遊戲
     if (gameStarted) {
       startGame(selectedDuration);
-    } else {
-      // 否則只更新單字列表
-      setWords(shuffleWords(wordLists[index].words).split(" "));
     }
   };
 
@@ -437,6 +441,7 @@ export default function Home() {
                       } ${currentWordList === index ? "font-bold" : ""} ${
                         themes[currentTheme].text
                       }`}
+                      style={{ minHeight: '40px' }} // 增加按鈕高度，使點擊區域更大
                     >
                       {list.name}
                     </button>

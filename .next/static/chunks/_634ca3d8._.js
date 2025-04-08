@@ -197,14 +197,15 @@ function Home() {
     };
     // 切換單字列表
     const toggleWordList = (index)=>{
+        // 確保索引有效
+        if (index < 0 || index >= wordLists.length) return;
         setCurrentWordList(index);
         setShowWordListSelector(false);
-        // 如果遊戲已經開始，重新開始遊戲以使用新的單字列表
+        // 無論遊戲是否開始，都更新單字列表
+        setWords(shuffleWords(wordLists[index].words).split(" "));
+        // 如果遊戲已經開始，重新開始遊戲
         if (gameStarted) {
             startGame(selectedDuration);
-        } else {
-            // 否則只更新單字列表
-            setWords(shuffleWords(wordLists[index].words).split(" "));
         }
     };
     // 處理用戶輸入
@@ -264,7 +265,7 @@ function Home() {
                 children: word
             }, index, false, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 301,
+                lineNumber: 305,
                 columnNumber: 9
             }, this);
         });
@@ -382,7 +383,7 @@ function Home() {
                         children: "⌨️Typing Game🖱️"
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 384,
+                        lineNumber: 388,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -403,12 +404,12 @@ function Home() {
                                         ]
                                     }, sec, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 402,
+                                        lineNumber: 406,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/games/typing/page.tsx",
-                                lineNumber: 400,
+                                lineNumber: 404,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -423,7 +424,7 @@ function Home() {
                                                 children: wordLists[currentWordList].name
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 419,
+                                                lineNumber: 423,
                                                 columnNumber: 15
                                             }, this),
                                             showWordListSelector && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -431,21 +432,24 @@ function Home() {
                                                 children: wordLists.map((list, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         onClick: ()=>toggleWordList(index),
                                                         className: `w-full text-left px-4 py-2 ${themes[currentTheme].buttonHover} ${currentWordList === index ? "font-bold" : ""} ${themes[currentTheme].text}`,
+                                                        style: {
+                                                            minHeight: '40px'
+                                                        },
                                                         children: list.name
                                                     }, index, false, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 432,
+                                                        lineNumber: 436,
                                                         columnNumber: 21
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 428,
+                                                lineNumber: 432,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 418,
+                                        lineNumber: 422,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -460,7 +464,7 @@ function Home() {
                                                         children: "🎨"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 454,
+                                                        lineNumber: 459,
                                                         columnNumber: 17
                                                     }, this),
                                                     " ",
@@ -468,7 +472,7 @@ function Home() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 450,
+                                                lineNumber: 455,
                                                 columnNumber: 15
                                             }, this),
                                             showThemeSelector && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -479,36 +483,36 @@ function Home() {
                                                         children: themes[themeName].name
                                                     }, themeName, false, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 462,
+                                                        lineNumber: 467,
                                                         columnNumber: 21
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 458,
+                                                lineNumber: 463,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 449,
+                                        lineNumber: 454,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/games/typing/page.tsx",
-                                lineNumber: 416,
+                                lineNumber: 420,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 398,
+                        lineNumber: 402,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 383,
+                lineNumber: 387,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -519,7 +523,7 @@ function Home() {
                         children: renderWords()
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 485,
+                        lineNumber: 490,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -533,13 +537,13 @@ function Home() {
                         disabled: gameEnded
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 490,
+                        lineNumber: 495,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 482,
+                lineNumber: 487,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -551,7 +555,7 @@ function Home() {
                         children: timeLeft
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 510,
+                        lineNumber: 515,
                         columnNumber: 16
                     }, this),
                     " 秒   |   ✍️ 打字速度：",
@@ -560,14 +564,14 @@ function Home() {
                         children: wpm
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 511,
+                        lineNumber: 516,
                         columnNumber: 26
                     }, this),
                     " WPM"
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 509,
+                lineNumber: 514,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -582,13 +586,13 @@ function Home() {
                 children: "press ' Tab ' to restart"
             }, void 0, false, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 513,
+                lineNumber: 518,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/games/typing/page.tsx",
-        lineNumber: 379,
+        lineNumber: 383,
         columnNumber: 5
     }, this);
 }
