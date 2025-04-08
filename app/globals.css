@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* muyu*/
+
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-out forwards;
+}
+
+.font-cute {
+  font-family: 'Ma Shan Zheng', cursive;
+  letter-spacing: 0.1em;
+}
+
+
+/* index*/
+
+
+
+
+
+
