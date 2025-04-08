@@ -33,7 +33,7 @@ const wordLists = [
     }
 ];
 // 隨機打亂單詞列表並返回指定數量的單詞
-function shuffleWords(words, count = 50) {
+function shuffleWords(words, count = 67) {
     const shuffled = [
         ...words
     ].sort(()=>0.5 - Math.random());
@@ -56,7 +56,10 @@ const themes = {
         buttonHover: "hover:bg-gray-300",
         inputBg: "bg-white",
         inputBorder: "border-gray-300",
-        inputFocus: "focus:ring-blue-400"
+        inputFocus: "focus:ring-blue-400",
+        primaryColor: "#2563eb",
+        secondaryColor: "#6b7280",
+        accentColor: "#3b82f6"
     },
     dark: {
         name: "Dark",
@@ -73,7 +76,10 @@ const themes = {
         buttonHover: "hover:bg-gray-600",
         inputBg: "bg-gray-800",
         inputBorder: "border-gray-600",
-        inputFocus: "focus:ring-blue-500"
+        inputFocus: "focus:ring-blue-500",
+        primaryColor: "#60a5fa",
+        secondaryColor: "#9ca3af",
+        accentColor: "#2563eb"
     },
     morandi: {
         name: "Morandi",
@@ -90,7 +96,10 @@ const themes = {
         buttonHover: "hover:bg-[#C4B19A]",
         inputBg: "bg-[#F5F2E9]",
         inputBorder: "border-[#D8C3A5]",
-        inputFocus: "focus:ring-[#A67C52]"
+        inputFocus: "focus:ring-[#A67C52]",
+        primaryColor: "#A67C52",
+        secondaryColor: "#B4A7A0",
+        accentColor: "#A67C52"
     },
     sage: {
         name: "Sage",
@@ -107,7 +116,10 @@ const themes = {
         buttonHover: "hover:bg-[#B0C0B0]",
         inputBg: "bg-[#F0F3EA]",
         inputBorder: "border-[#C0D0C0]",
-        inputFocus: "focus:ring-[#5F7A5F]"
+        inputFocus: "focus:ring-[#5F7A5F]",
+        primaryColor: "#5F7A5F",
+        secondaryColor: "#A0B0A0",
+        accentColor: "#5F7A5F"
     },
     dusty: {
         name: "Dusty",
@@ -124,7 +136,10 @@ const themes = {
         buttonHover: "hover:bg-[#C4B19A]",
         inputBg: "bg-[#F5EDE1]",
         inputBorder: "border-[#D8C3A5]",
-        inputFocus: "focus:ring-[#B4A7A0]"
+        inputFocus: "focus:ring-[#B4A7A0]",
+        primaryColor: "#B4A7A0",
+        secondaryColor: "#C4B19A",
+        accentColor: "#B4A7A0"
     },
     lavender: {
         name: "Lavender",
@@ -141,7 +156,10 @@ const themes = {
         buttonHover: "hover:bg-[#C4B1C4]",
         inputBg: "bg-[#F0EAF3]",
         inputBorder: "border-[#D8C3D8]",
-        inputFocus: "focus:ring-[#A67CA6]"
+        inputFocus: "focus:ring-[#A67CA6]",
+        primaryColor: "#A67CA6",
+        secondaryColor: "#B4A7B4",
+        accentColor: "#A67CA6"
     }
 };
 function Home() {
@@ -203,15 +221,30 @@ function Home() {
     };
     // 切換單字列表
     const toggleWordList = (index)=>{
-        // 確保索引有效
-        if (index < 0 || index >= wordLists.length) return;
         setCurrentWordList(index);
         setShowWordListSelector(false);
-        // 無論遊戲是否開始，都更新單字列表
-        setWords(shuffleWords(wordLists[index].words).split(" "));
-        // 如果遊戲已經開始，重新開始遊戲
+        // 如果遊戲已經開始，重新開始遊戲以使用新的單字列表
         if (gameStarted) {
-            startGame(selectedDuration);
+            setWords(shuffleWords(wordLists[index].words).split(" "));
+            setCurrentIndex(0);
+            setUserInput("");
+            setTimeLeft(selectedDuration);
+            setWpm(0);
+            setCorrectChars(0);
+            setStartTime(null);
+            setGameStarted(false);
+            setGameEnded(false);
+            setTimerRunning(false);
+            setCurrentWordCorrect(true);
+            // 確保在重新開始後將焦點回到輸入框
+            setTimeout(()=>{
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                }
+            }, 100);
+        } else {
+            // 否則只更新單字列表
+            setWords(shuffleWords(wordLists[index].words).split(" "));
         }
     };
     // 處理用戶輸入
@@ -260,7 +293,7 @@ function Home() {
     // 渲染單詞列表
     const renderWords = ()=>{
         return words.map((word, index)=>{
-            let className = "inline-block mr-2";
+            let className = "inline-block mr-2 text-lg";
             if (index < currentIndex) {
                 className += ` ${themes[currentTheme].secondary}`;
             } else if (index === currentIndex) {
@@ -271,7 +304,7 @@ function Home() {
                 children: word
             }, index, false, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 305,
+                lineNumber: 338,
                 columnNumber: 9
             }, this);
         });
@@ -346,6 +379,20 @@ function Home() {
     }, [
         currentWordList
     ]);
+    // 添加點擊空白處關閉選單的功能
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const handleClickOutside = (event)=>{
+            const target = event.target;
+            if (!target.closest('.theme-selector') && !target.closest('.wordlist-selector')) {
+                setShowThemeSelector(false);
+                setShowWordListSelector(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return ()=>{
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     // 渲染 UI
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: `min-h-screen ${themes[currentTheme].background} flex flex-col items-center justify-center p-4 transition-colors duration-300`,
@@ -367,7 +414,7 @@ function Home() {
                         children: "⌨️Typing Game🖱️"
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 388,
+                        lineNumber: 437,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -381,26 +428,26 @@ function Home() {
                                     60
                                 ].map((sec)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>startGame(sec),
-                                        className: `px-4 py-2 rounded cursor-pointer ${selectedDuration === sec ? `${themes[currentTheme].accent} text-white` : `${themes[currentTheme].buttonBg} ${themes[currentTheme].buttonText} ${themes[currentTheme].buttonHover}`}`,
+                                        className: `px-3 py-2 rounded cursor-pointer ${selectedDuration === sec ? `${themes[currentTheme].accent} text-white` : `${themes[currentTheme].buttonBg} ${themes[currentTheme].buttonText} ${themes[currentTheme].buttonHover}`}`,
                                         children: [
                                             sec,
-                                            " 秒"
+                                            " sec"
                                         ]
                                     }, sec, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 406,
+                                        lineNumber: 455,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/games/typing/page.tsx",
-                                lineNumber: 404,
+                                lineNumber: 453,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex space-x-2",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative",
+                                        className: "relative wordlist-selector",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: ()=>setShowWordListSelector(!showWordListSelector),
@@ -408,7 +455,7 @@ function Home() {
                                                 children: wordLists[currentWordList].name
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 423,
+                                                lineNumber: 472,
                                                 columnNumber: 15
                                             }, this),
                                             showWordListSelector && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -416,28 +463,25 @@ function Home() {
                                                 children: wordLists.map((list, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         onClick: ()=>toggleWordList(index),
                                                         className: `w-full text-left px-4 py-2 ${themes[currentTheme].buttonHover} ${currentWordList === index ? "font-bold" : ""} ${themes[currentTheme].text}`,
-                                                        style: {
-                                                            minHeight: '40px'
-                                                        },
                                                         children: list.name
                                                     }, index, false, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 436,
+                                                        lineNumber: 484,
                                                         columnNumber: 21
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 432,
+                                                lineNumber: 480,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 422,
+                                        lineNumber: 471,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative",
+                                        className: "relative theme-selector",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: ()=>setShowThemeSelector(!showThemeSelector),
@@ -448,7 +492,7 @@ function Home() {
                                                         children: "🎨"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 459,
+                                                        lineNumber: 506,
                                                         columnNumber: 17
                                                     }, this),
                                                     " ",
@@ -456,64 +500,115 @@ function Home() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 455,
+                                                lineNumber: 502,
                                                 columnNumber: 15
                                             }, this),
                                             showThemeSelector && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: `absolute right-0 mt-2 w-48 ${themes[currentTheme].containerBg} rounded-md shadow-lg z-10 border ${themes[currentTheme].inputBorder}`,
                                                 children: Object.keys(themes).map((themeName)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         onClick: ()=>toggleTheme(themeName),
-                                                        className: `w-full text-left px-4 py-2 ${themes[themeName].buttonHover} ${currentTheme === themeName ? "font-bold" : ""} ${themes[themeName].text}`,
-                                                        children: themes[themeName].name
-                                                    }, themeName, false, {
+                                                        className: `w-full text-left px-4 py-2 ${themes[themeName].buttonHover} ${currentTheme === themeName ? "font-bold" : ""} ${themes[themeName].text} flex items-center justify-between`,
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: themes[themeName].name
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/games/typing/page.tsx",
+                                                                lineNumber: 523,
+                                                                columnNumber: 23
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                className: "flex space-x-1",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "w-3 h-3 rounded-full",
+                                                                        style: {
+                                                                            backgroundColor: themes[themeName].primaryColor
+                                                                        }
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/app/games/typing/page.tsx",
+                                                                        lineNumber: 525,
+                                                                        columnNumber: 25
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "w-3 h-3 rounded-full",
+                                                                        style: {
+                                                                            backgroundColor: themes[themeName].secondaryColor
+                                                                        }
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/app/games/typing/page.tsx",
+                                                                        lineNumber: 529,
+                                                                        columnNumber: 25
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "w-3 h-3 rounded-full",
+                                                                        style: {
+                                                                            backgroundColor: themes[themeName].accentColor
+                                                                        }
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/app/games/typing/page.tsx",
+                                                                        lineNumber: 533,
+                                                                        columnNumber: 25
+                                                                    }, this)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/app/games/typing/page.tsx",
+                                                                lineNumber: 524,
+                                                                columnNumber: 23
+                                                            }, this)
+                                                        ]
+                                                    }, themeName, true, {
                                                         fileName: "[project]/app/games/typing/page.tsx",
-                                                        lineNumber: 467,
+                                                        lineNumber: 514,
                                                         columnNumber: 21
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/games/typing/page.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 510,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/games/typing/page.tsx",
-                                        lineNumber: 454,
+                                        lineNumber: 501,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/games/typing/page.tsx",
-                                lineNumber: 420,
+                                lineNumber: 469,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 402,
+                        lineNumber: 451,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 387,
+                lineNumber: 436,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: `shadow-md rounded p-6 w-full max-w-3xl mb-4 ${themes[currentTheme].containerBg}`,
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: `mb-4 leading-relaxed min-h-[100px] ${themes[currentTheme].text}`,
+                        className: `mb-4 leading-relaxed h-[200px] overflow-y-auto ${themes[currentTheme].text}`,
+                        style: {
+                            height: "150px",
+                            overflowY: "auto"
+                        },
                         children: renderWords()
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 490,
+                        lineNumber: 551,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                         ref: inputRef,
                         type: "text",
-                        className: `w-full h-12 border rounded p-2 focus:outline-none focus:ring-2 ${currentWordCorrect ? `${themes[currentTheme].inputBorder} ${themes[currentTheme].inputFocus} ${themes[currentTheme].text} ${themes[currentTheme].inputBg}` : `border-red-500 focus:ring-red-400 ${themes[currentTheme].text} ${themes[currentTheme].inputBg}`}`,
+                        className: `w-full h-11 border rounded p-2 focus:outline-none focus:ring-2 ${currentWordCorrect ? `${themes[currentTheme].inputBorder} ${themes[currentTheme].inputFocus} ${themes[currentTheme].text} ${themes[currentTheme].inputBg}` : `border-red-500 focus:ring-red-400 ${themes[currentTheme].text} ${themes[currentTheme].inputBg}`}`,
                         placeholder: gameEnded ? "press ' Tab ' to restart" : "Type to start . . .",
                         value: userInput,
                         onChange: handleInputChange,
@@ -521,62 +616,62 @@ function Home() {
                         disabled: gameEnded
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 495,
+                        lineNumber: 560,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 487,
+                lineNumber: 548,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: `text-lg mt-2 ${themes[currentTheme].text}`,
                 children: [
-                    "⏱ 剩餘時間：",
+                    "⏱ Time：",
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                         className: "font-semibold",
                         children: timeLeft
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 515,
+                        lineNumber: 580,
                         columnNumber: 16
                     }, this),
-                    " 秒   |   ✍️ 打字速度：",
+                    " s   |   ✍️ Speed：",
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                         className: "font-semibold",
                         children: wpm
                     }, void 0, false, {
                         fileName: "[project]/app/games/typing/page.tsx",
-                        lineNumber: 516,
-                        columnNumber: 26
+                        lineNumber: 581,
+                        columnNumber: 27
                     }, this),
                     " WPM"
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 514,
+                lineNumber: 579,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: `text-lg ${themes[currentTheme].secondary} mt-2`,
                 style: {
                     position: "absolute",
-                    bottom: "25px",
+                    bottom: "30px",
                     left: "50%",
                     transform: "translateX(-50%)",
-                    opacity: 0.5
+                    opacity: 0.7
                 },
                 children: "press ' Tab ' to restart"
             }, void 0, false, {
                 fileName: "[project]/app/games/typing/page.tsx",
-                lineNumber: 518,
+                lineNumber: 583,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/games/typing/page.tsx",
-        lineNumber: 383,
+        lineNumber: 432,
         columnNumber: 5
     }, this);
 }

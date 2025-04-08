@@ -3,6 +3,5 @@
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/games/muyu/page": "app/games/muyu/page.js",
   "/games/page": "app/games/page.js",
-  "/games/teris/page": "app/games/teris/page.js",
   "/games/typing/page": "app/games/typing/page.js"
 }

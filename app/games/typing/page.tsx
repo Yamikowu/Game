@@ -27,7 +27,7 @@ const wordLists: WordList[] = [
 ];
 
 // 隨機打亂單詞列表並返回指定數量的單詞
-function shuffleWords(words: string[], count = 50) {
+function shuffleWords(words: string[], count = 67) {
   const shuffled = [...words].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count).join(" ");
 }
@@ -49,6 +49,9 @@ type Theme = {
   inputBg: string;
   inputBorder: string;
   inputFocus: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
 };
 
 // 定義可用的主題
@@ -69,6 +72,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-white",
     inputBorder: "border-gray-300",
     inputFocus: "focus:ring-blue-400",
+    primaryColor: "#2563eb",
+    secondaryColor: "#6b7280",
+    accentColor: "#3b82f6",
   },
   dark: {
     name: "Dark",
@@ -86,6 +92,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-gray-800",
     inputBorder: "border-gray-600",
     inputFocus: "focus:ring-blue-500",
+    primaryColor: "#60a5fa",
+    secondaryColor: "#9ca3af",
+    accentColor: "#2563eb",
   },
   morandi: {
     name: "Morandi",
@@ -103,6 +112,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-[#F5F2E9]",
     inputBorder: "border-[#D8C3A5]",
     inputFocus: "focus:ring-[#A67C52]",
+    primaryColor: "#A67C52",
+    secondaryColor: "#B4A7A0",
+    accentColor: "#A67C52",
   },
   sage: {
     name: "Sage",
@@ -120,6 +132,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-[#F0F3EA]",
     inputBorder: "border-[#C0D0C0]",
     inputFocus: "focus:ring-[#5F7A5F]",
+    primaryColor: "#5F7A5F",
+    secondaryColor: "#A0B0A0",
+    accentColor: "#5F7A5F",
   },
   dusty: {
     name: "Dusty",
@@ -137,6 +152,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-[#F5EDE1]",
     inputBorder: "border-[#D8C3A5]",
     inputFocus: "focus:ring-[#B4A7A0]",
+    primaryColor: "#B4A7A0",
+    secondaryColor: "#C4B19A",
+    accentColor: "#B4A7A0",
   },
   lavender: {
     name: "Lavender",
@@ -154,6 +172,9 @@ const themes: Record<string, Theme> = {
     inputBg: "bg-[#F0EAF3]",
     inputBorder: "border-[#D8C3D8]",
     inputFocus: "focus:ring-[#A67CA6]",
+    primaryColor: "#A67CA6",
+    secondaryColor: "#B4A7B4",
+    accentColor: "#A67CA6",
   },
 };
 
@@ -224,18 +245,30 @@ export default function Home() {
 
   // 切換單字列表
   const toggleWordList = (index: number) => {
-    // 確保索引有效
-    if (index < 0 || index >= wordLists.length) return;
-    
     setCurrentWordList(index);
     setShowWordListSelector(false);
-    
-    // 無論遊戲是否開始，都更新單字列表
-    setWords(shuffleWords(wordLists[index].words).split(" "));
-    
-    // 如果遊戲已經開始，重新開始遊戲
+    // 如果遊戲已經開始，重新開始遊戲以使用新的單字列表
     if (gameStarted) {
-      startGame(selectedDuration);
+      setWords(shuffleWords(wordLists[index].words).split(" "));
+      setCurrentIndex(0);
+      setUserInput("");
+      setTimeLeft(selectedDuration);
+      setWpm(0);
+      setCorrectChars(0);
+      setStartTime(null);
+      setGameStarted(false);
+      setGameEnded(false);
+      setTimerRunning(false);
+      setCurrentWordCorrect(true);
+      // 確保在重新開始後將焦點回到輸入框
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+    } else {
+      // 否則只更新單字列表
+      setWords(shuffleWords(wordLists[index].words).split(" "));
     }
   };
 
@@ -293,7 +326,7 @@ export default function Home() {
   // 渲染單詞列表
   const renderWords = () => {
     return words.map((word, index) => {
-      let className = "inline-block mr-2";
+      let className = "inline-block mr-2 text-lg";
 
       if (index < currentIndex) {
         className += ` ${themes[currentTheme].secondary}`;
@@ -378,6 +411,22 @@ export default function Home() {
     localStorage.setItem("typing-wordlist", currentWordList.toString());
   }, [currentWordList]);
 
+  // 添加點擊空白處關閉選單的功能
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.theme-selector') && !target.closest('.wordlist-selector')) {
+        setShowThemeSelector(false);
+        setShowWordListSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // 渲染 UI
   return (
     <div
@@ -406,25 +455,24 @@ export default function Home() {
               <button
                 key={sec}
                 onClick={() => startGame(sec)}
-                className={`px-4 py-2 rounded cursor-pointer ${
+                className={`px-3 py-2 rounded cursor-pointer ${
                   selectedDuration === sec
                     ? `${themes[currentTheme].accent} text-white`
                     : `${themes[currentTheme].buttonBg} ${themes[currentTheme].buttonText} ${themes[currentTheme].buttonHover}`
                 }`}
               >
-                {sec} 秒
+                {sec} sec
               </button>
             ))}
           </div>
 
           <div className="flex space-x-2">
             {/* 單字列表選擇器 */}
-            <div className="relative">
+            <div className="relative wordlist-selector">
               <button
                 onClick={() => setShowWordListSelector(!showWordListSelector)}
                 className={`px-4 py-2 rounded-md ${themes[currentTheme].buttonBg} ${themes[currentTheme].buttonText} flex items-center cursor-pointer`}
               >
-                
                 {wordLists[currentWordList].name}
               </button>
 
@@ -441,7 +489,6 @@ export default function Home() {
                       } ${currentWordList === index ? "font-bold" : ""} ${
                         themes[currentTheme].text
                       }`}
-                      style={{ minHeight: '40px' }} // 增加按鈕高度，使點擊區域更大
                     >
                       {list.name}
                     </button>
@@ -451,7 +498,7 @@ export default function Home() {
             </div>
 
             {/* 主題選擇器 */}
-            <div className="relative">
+            <div className="relative theme-selector">
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
                 className={`px-4 py-2 rounded-md ${themes[currentTheme].accent} text-white flex items-center cursor-pointer`}
@@ -471,9 +518,23 @@ export default function Home() {
                         themes[themeName].buttonHover
                       } ${currentTheme === themeName ? "font-bold" : ""} ${
                         themes[themeName].text
-                      }`}
+                      } flex items-center justify-between`}
                     >
-                      {themes[themeName].name}
+                      <span>{themes[themeName].name}</span>
+                      <div className="flex space-x-1">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: themes[themeName].primaryColor }}
+                        />
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: themes[themeName].secondaryColor }}
+                        />
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: themes[themeName].accentColor }}
+                        />
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -488,14 +549,18 @@ export default function Home() {
         className={`shadow-md rounded p-6 w-full max-w-3xl mb-4 ${themes[currentTheme].containerBg}`}
       >
         <div
-          className={`mb-4 leading-relaxed min-h-[100px] ${themes[currentTheme].text}`}
+          className={`mb-4 leading-relaxed h-[200px] overflow-y-auto ${themes[currentTheme].text}`}
+          style={{
+            height: "150px",
+            overflowY: "auto"
+          }}
         >
           {renderWords()}
         </div>
         <input
           ref={inputRef}
           type="text"
-          className={`w-full h-12 border rounded p-2 focus:outline-none focus:ring-2 ${
+          className={`w-full h-11 border rounded p-2 focus:outline-none focus:ring-2 ${
             currentWordCorrect
               ? `${themes[currentTheme].inputBorder} ${themes[currentTheme].inputFocus} ${themes[currentTheme].text} ${themes[currentTheme].inputBg}`
               : `border-red-500 focus:ring-red-400 ${themes[currentTheme].text} ${themes[currentTheme].inputBg}`
@@ -512,17 +577,17 @@ export default function Home() {
 
       {/* 遊戲狀態顯示 */}
       <div className={`text-lg mt-2 ${themes[currentTheme].text}`}>
-        ⏱ 剩餘時間：<span className="font-semibold">{timeLeft}</span> 秒 &nbsp;
-        | &nbsp; ✍️ 打字速度：<span className="font-semibold">{wpm}</span> WPM
+        ⏱ Time：<span className="font-semibold">{timeLeft}</span> s &nbsp;
+        | &nbsp; ✍️ Speed：<span className="font-semibold">{wpm}</span> WPM
       </div>
       <div
         className={`text-lg ${themes[currentTheme].secondary} mt-2`}
         style={{
           position: "absolute",
-          bottom: "25px",
+          bottom: "30px",
           left: "50%",
           transform: "translateX(-50%)",
-          opacity: 0.5,
+          opacity: 0.7,
         }}
       >
         press ' Tab ' to restart
